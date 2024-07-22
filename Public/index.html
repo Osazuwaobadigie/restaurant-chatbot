@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restaurant Chatbot</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    #chat {
+      border: 1px solid #ccc;
+      width: 300px;
+      height: 400px;
+      overflow-y: scroll;
+      padding: 10px;
+    }
+    #input {
+      margin-top: 10px;
+      width: 300px;
+    }
+  </style>
+</head>
+<body>
+  <div id="chat"></div>
+  <input type="text" id="input" placeholder="Type a message...">
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    const chat = document.getElementById('chat');
+    const input = document.getElementById('input');
+
+    socket.on('bot-message', (msg) => {
+      const message = document.createElement('div');
+      message.textContent = `Bot: ${msg}`;
+      chat.appendChild(message);
+      chat.scrollTop = chat.scrollHeight;
+    });
+
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        const msg = input.value;
+        const message = document.createElement('div');
+        message.textContent = `You: ${msg}`;
+        chat.appendChild(message);
+        chat.scrollTop = chat.scrollHeight;
+        socket.emit('customer-message', msg);
+        input.value = '';
+      }
+    });
+  </script>
+</body>
+</html>
